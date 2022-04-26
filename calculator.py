@@ -102,3 +102,7 @@ def to_correct_decimal_number(num: str) -> str:
     if num.endswith('.'):
         num = num[:-1]
     return num
+
+if __name__ == '__main__':
+    expression = input('Please input expression (without spaces): ')
+    print(calculate(expression))
