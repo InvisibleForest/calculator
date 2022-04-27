@@ -15,10 +15,13 @@ def show_answer(row_expression) -> None:
         answer = answer.replace('.', ',')
         show_text(answer)
     except ZeroDivisionError:
-        ui.text_window.setText('Zero Division')
+        show_text('Zero Division')
         QtCore.QTimer.singleShot(500, clear_display)
+    except ValueError as ve:
+        show_text(*ve.args)
+        QtCore.QTimer.singleShot(1000, clear_display)
     except (ArithmeticError, IndexError):
-        ui.text_window.setText('Error')
+        show_text('Error')
         QtCore.QTimer.singleShot(500, clear_display)
 
 

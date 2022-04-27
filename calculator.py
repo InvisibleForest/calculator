@@ -34,10 +34,12 @@ def convert_to_rpn(row_expression: str) -> list:
     """convert user's expression to reverse polish notation"""
     rpn_expression = []
     prec = {'+': 0, '-': 0, '/': 1, '*': 1, '^': 2, '√': 2}
+    if 'E' in row_expression:
+        raise ValueError('E notation is not supported')
+
     # splitting expressions to tokens
     row_expression = row_expression.replace(',', '.')
-    tokens = re.split(r'([()+\-*^/√]) *', row_expression)
-
+    tokens = re.split(r'([()+\-*^/√])', row_expression)
     tokens = [token for token in tokens if token != '']
 
     def convert_process() -> None:
@@ -102,6 +104,7 @@ def to_correct_decimal_number(num: str) -> str:
     if num.endswith('.'):
         num = num[:-1]
     return num
+
 
 if __name__ == '__main__':
     expression = input('Please input expression (without spaces): ')
