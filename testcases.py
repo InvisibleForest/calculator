@@ -3,12 +3,14 @@ from decimal import Decimal
 assert calculator.calculate('2+2') == 4
 assert calculator.calculate('1-1') == 0
 assert calculator.calculate('10/2') == 5
+assert calculator.calculate('3*10') == 30
 assert calculator.calculate('4*3') == 12
 assert calculator.calculate('3^3') == 27
 assert calculator.calculate('2+2*2') == 6
 assert calculator.calculate('-13+5') == -8
 assert calculator.calculate('-13-999999999') == -1000000012
 assert calculator.calculate('√9') == 3
+assert calculator.calculate('√2') == Decimal('1.414213562373095048801688724')
 assert calculator.calculate('√9*10') == 30
 assert calculator.calculate('0,3+0,3+0,3') == Decimal('0.9')
 assert calculator.calculate('2,2+23') == Decimal('25.2')

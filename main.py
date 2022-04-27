@@ -2,6 +2,7 @@ from PyQt5 import QtCore, QtWidgets
 from calculatorui import Ui_MainWindow
 import calculator as calc
 import sys
+import re
 
 
 def show_answer(row_expression) -> None:
@@ -11,23 +12,25 @@ def show_answer(row_expression) -> None:
     try:
         ui.equal_clicked = True
         answer = str(calc.calculate(row_expression))
-        answer = answer.rstrip('0').rstrip('.').replace('.', ',')
-        ui.text_window.setText(answer)
+        answer = answer.replace('.', ',')
+        print(answer)
+        show_text(answer)
     except ZeroDivisionError:
         ui.text_window.setText('Zero Division')
         QtCore.QTimer.singleShot(500, clear_display)
     except (ArithmeticError, IndexError):
-            ui.text_window.setText('Error')
-            QtCore.QTimer.singleShot(500, clear_display)
+        ui.text_window.setText('Error')
+        QtCore.QTimer.singleShot(500, clear_display)
+
 
 def show_digit(digit: str) -> None:
     """Receiving digit and displaying it."""
     clear_display_for_new_expression()
     text = ui.text_window.text()
     if text == '0':
-        ui.text_window.setText(digit)
+        show_text(digit)
     else:
-        ui.text_window.setText(text + digit)
+        show_text(text + digit)
 
 
 def show_brace(brace: str) -> None:
@@ -36,12 +39,12 @@ def show_brace(brace: str) -> None:
     text = ui.text_window.text()
     if brace == '(':
         if not text or text[-1] in '+-*/^(√':
-            ui.text_window.setText(text + brace)
+            show_text(text + brace)
         elif text[-1].isdigit():
-            ui.text_window.setText(text + '*' + brace)
+            show_text(text + '*' + brace)
     elif brace == ')':
         if text.count('(') > text.count(')'):
-            ui.text_window.setText(text + brace)
+            show_text(text + brace)
 
 
 def show_operand(operand):
@@ -52,9 +55,9 @@ def show_operand(operand):
     ui.equal_clicked = False
     text = ui.text_window.text()
     if text and text[-1] in '+-*/^':
-        ui.text_window.setText(text[:-1] + operand)
+        show_text(text[:-1] + operand)
     else:
-        ui.text_window.setText(text + operand)
+        show_text(text + operand)
 
 
 def show_comma():
@@ -69,39 +72,59 @@ def show_comma():
         if founded_index > operand_index:
             operand_index = founded_index
     if not text:
-        ui.text_window.setText(text + '0,')
+        show_text(text + '0,')
     elif ',' not in text[operand_index:]:
         if text[operand_index:][-1] in '+-*/^':
-            ui.text_window.setText(text + '0,')
+            show_text(text + '0,')
         else:
-            ui.text_window.setText(text + ',')
+            show_text(text + ',')
 
 
 def backspace():
     """Deleting last symbol from expression"""
     text = ui.text_window.text()[:-1]
     if text:
-        ui.text_window.setText(text)
+        show_text(text)
     else:
         ui.text_window.setText('')
 
 
 def show_root():
+    """Displaying root symbol"""
     clear_display_for_new_expression()
     text = ui.text_window.text()
-    ui.text_window.setText(text + '√')
+    show_text(text + '√')
 
 
 def clear_display():
     """Removing whole expression"""
     ui.text_window.setText('')
 
+
 def clear_display_for_new_expression():
-    """Checking pressed equal button flag.
-    If it was pressed, clearing display"""
+    """Clearing display after calculation for showing new
+    expression. If equal button flag was pressed,
+    clearing display and switching the flag"""
     if ui.equal_clicked:
         clear_display()
         ui.equal_clicked = False
+
+
+def show_text(text: str) -> None:
+    """Displaying expression or number in the calculator window.
+    Changing shown text size in order to fit the window's size"""
+    style_sheet = ui.text_window.styleSheet()
+    if len(text) < 15:
+        style_sheet = re.sub(r'font: \d+pt', 'font: 16pt', style_sheet)
+    elif 15 <= len(text) < 21:
+        style_sheet = re.sub(r'font: \d+pt', 'font: 12pt', style_sheet)
+    elif 21 <= len(text) < 32:
+        style_sheet = re.sub(r'font: \d+pt', 'font: 8pt', style_sheet)
+    elif len(text) >= 32:
+        style_sheet = re.sub(r'font: \d+pt', 'font: 7pt', style_sheet)
+    ui.text_window.setStyleSheet(style_sheet)
+    ui.text_window.setText(text)
+
 
 # preparing and showing ui
 app = QtWidgets.QApplication(sys.argv)
