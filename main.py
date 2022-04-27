@@ -13,7 +13,6 @@ def show_answer(row_expression) -> None:
         ui.equal_clicked = True
         answer = str(calc.calculate(row_expression))
         answer = answer.replace('.', ',')
-        print(answer)
         show_text(answer)
     except ZeroDivisionError:
         ui.text_window.setText('Zero Division')
